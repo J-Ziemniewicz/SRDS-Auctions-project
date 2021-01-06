@@ -3,4 +3,6 @@ Projekt przygotowany na laboratoria z przedmiotu Systemy Rozproszone Dużej Skal
 
 ## Konfiguracja projektu
 Najpierw sprawdzić czy Cassandra jest włączona. Następnie wciągnąć schemat bazy danych za pomocą 
-`cqlsh -f create_schema.cql` 
+``` bash
+cqlsh -f create_schema.cql 
+```
