@@ -26,11 +26,13 @@ public class Auction {
 
         BackendSession session = new BackendSession(contactPoint, keyspace);
 
+        session.upsertProduct(155,52,"16:00:00");
 
-//        String output = session.selectAll();
-//        System.out.println("Users: \n" + output);
+        String output = session.selectAll();
 
-          session.upsertProduct(150,50,"15:00:00");
+        System.out.println("Auction products: \n" + output);
+
+
 
 //        session.deleteAll();
 

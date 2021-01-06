@@ -30,11 +30,15 @@ public class BackendSession {
     }
 
     private static PreparedStatement INSERT_INTO_AUCTIONS;
+    private static PreparedStatement DELETE_ALL_FROM_AUCTIONS;
+    private static PreparedStatement SELECT_ALL_FROM_AUCTIONS;
 
-    private static final String USER_FORMAT = "- %-10s  %-16s %-10s %-10s\n";
+    private static final String AUCTION_FORMAT = "- %-10s  %-10s %-8s %-8s %-8s %-8s %-8s\n";
 
     private void prepareStatements() throws BackendException {
         try {
+            SELECT_ALL_FROM_AUCTIONS = session.prepare("SELECT * FROM auctions;");
+            DELETE_ALL_FROM_AUCTIONS = session.prepare("TRUNCATE auctions;");
             INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold,starting_price) VALUES (?,?,?,?,?,?);");
         } catch (Exception e) {
             throw new BackendException("Could not prepare statements. " + e.getMessage() + ".", e);
@@ -58,29 +62,32 @@ public class BackendSession {
         logger.info("Auction product " + uuid + " upserted");
     }
 
-//    public String selectAll() throws BackendException {
-//        StringBuilder builder = new StringBuilder();
-//        BoundStatement bs = new BoundStatement(SELECT_ALL_FROM_USERS);
-//
-//        ResultSet rs = null;
-//
-//        try {
-//            rs = session.execute(bs);
-//        } catch (Exception e) {
-//            throw new BackendException("Could not perform a query. " + e.getMessage() + ".", e);
-//        }
-//
-//        for (Row row : rs) {
-//            String rcompanyName = row.getString("companyName");
-//            String rname = row.getString("name");
-//            int rphone = row.getInt("phone");
-//            String rstreet = row.getString("street");
-//
-//            builder.append(String.format(USER_FORMAT, rcompanyName, rname, rphone, rstreet));
-//        }
-//
-//        return builder.toString();
-//    }
+    public String selectAll() throws BackendException {
+        StringBuilder builder = new StringBuilder();
+        BoundStatement bs = new BoundStatement(SELECT_ALL_FROM_AUCTIONS);
+
+        ResultSet rs = null;
+
+        try {
+            rs = session.execute(bs);
+        } catch (Exception e) {
+            throw new BackendException("Could not perform a query. " + e.getMessage() + ".", e);
+        }
+
+        for (Row row : rs) {
+            UUID ruuid = row.getUUID("product_id");
+            int rbuy_out_price = row.getInt("buy_out_price");
+            int rbuyer_id = row.getInt("buyer_id");
+            int rcurrent_price = row.getInt("current_price");
+            boolean ris_sold = row.getBool("is_sold");
+            int rstarting_price = row.getInt("starting_price");
+            LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
+
+            builder.append(String.format(AUCTION_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id,rcurrent_price,ris_sold,rstarting_price));
+        }
+
+        return builder.toString();
+    }
 
 //    public void upsertUser(String companyName, String name, int phone, String street) throws BackendException {
 //        BoundStatement bs = new BoundStatement(INSERT_INTO_USERS);
@@ -95,17 +102,17 @@ public class BackendSession {
 //        logger.info("User " + name + " upserted");
 //    }
 
-//    public void deleteAll() throws BackendException {
-//        BoundStatement bs = new BoundStatement(DELETE_ALL_FROM_USERS);
-//
-//        try {
-//            session.execute(bs);
-//        } catch (Exception e) {
-//            throw new BackendException("Could not perform a delete operation. " + e.getMessage() + ".", e);
-//        }
-//
-//        logger.info("All users deleted");
-//    }
+    public void deleteAll() throws BackendException {
+        BoundStatement bs = new BoundStatement(DELETE_ALL_FROM_AUCTIONS);
+
+        try {
+            session.execute(bs);
+        } catch (Exception e) {
+            throw new BackendException("Could not perform a delete operation. " + e.getMessage() + ".", e);
+        }
+
+        logger.info("All products deleted from auction");
+    }
 
     protected void finalize() {
         try {
