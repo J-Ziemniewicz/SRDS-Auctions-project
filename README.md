@@ -2,7 +2,10 @@
 Projekt przygotowany na laboratoria z przedmiotu Systemy Rozproszone Dużej Skali.
 
 ## Konfiguracja projektu
-Najpierw sprawdzić czy Cassandra jest włączona. Następnie wciągnąć schemat bazy danych za pomocą 
+Projekt wlaczyc przy pomocy biblioteki ccm.
 ``` bash
-cqlsh -f create_schema.cql 
+ccm create auction_cluster -v 3.11.0
+ccm populate -n 3
+ccm start
+ccm node1 cqlsh -f Auction-project/Schema/create_schema.cql
 ```
