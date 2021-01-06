@@ -5,10 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.datastax.driver.extras.codecs.jdk8.LocalTimeCodec;
 
-import java.sql.Time;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.UUID;
+
+// TODO: UPDATE Price if is_sold == FALSE
+// TODO: GDY czas ten sam update'uj ten z wieksza kwota
 
 public class BackendSession {
     private static final Logger logger = LoggerFactory.getLogger(BackendSession.class);
