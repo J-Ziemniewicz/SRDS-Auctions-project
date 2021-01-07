@@ -9,3 +9,10 @@ ccm populate -n 3
 ccm start
 ccm node1 cqlsh -f Auction-project/Schema/create_schema.cql
 ```
+
+
+## TODO:
+- [TODO] Stworzenie klasy bota odpowiadajacej za licytowanie produktu,
+- [TODO] Stworzenie operacji licytowania, ktora wywoluje najpierw select potem update,
+- [TODO] Zamienienie Time na timestamp w strukturze bazy,
+- [TODO] Usuniecie pola starting_price -> current_price przy inicjalizowaniu klasy przyjmie wartosc starting_price.

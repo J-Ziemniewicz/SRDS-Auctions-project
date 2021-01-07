@@ -10,13 +10,12 @@ public class Product {
     private float starting_price;
     private boolean is_sold;
 
-    public Product(int product_id, java.time.LocalTime auction_end, float buy_out_price, float current_price, float starting_price,boolean is_sold)
+    public Product(int product_id, java.time.LocalTime auction_end, float buy_out_price,float starting_price,boolean is_sold)
     {
         this.product_id = product_id;
         this.auction_end = auction_end;
         this.buy_out_price = buy_out_price;
-        this.current_price = current_price;
-        this.starting_price = starting_price;
+        this.current_price = starting_price;
         this.is_sold = is_sold;
     }
 
@@ -32,9 +31,6 @@ public class Product {
         return current_price;
     }
 
-    public float getStarting_price() {
-        return starting_price;
-    }
 
     public int getProduct_id() {
         return product_id;
@@ -64,7 +60,4 @@ public class Product {
         this.product_id = product_id;
     }
 
-    public void setStarting_price(float starting_price) {
-        this.starting_price = starting_price;
-    }
 }

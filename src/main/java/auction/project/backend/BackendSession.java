@@ -36,13 +36,13 @@ public class BackendSession {
     private static PreparedStatement UPDATE_PRICE_AUCTIONS;
     private static PreparedStatement UPDATE_SOLD_AUCTIONS;
 
-    private static final String AUCTION_FORMAT = "- %-10s  %-10s %-8s %-8s %-8s %-8s %-8s\n";
+    private static final String AUCTION_FORMAT = "- %-10s  %-10s %-8s %-8s %-8s %-8s\n";
 
     private void prepareStatements() throws BackendException {
         try {
             SELECT_ALL_FROM_AUCTIONS = session.prepare("SELECT * FROM auctions;");
             DELETE_ALL_FROM_AUCTIONS = session.prepare("TRUNCATE auctions;");
-            INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold,starting_price) VALUES (?,?,?,?,?,?);");
+            INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold) VALUES (?,?,?,?,?);");
             UPDATE_PRICE_AUCTIONS = session.prepare("UPDATE auctions set current_price = ? WHERE product_id = ?;");
             UPDATE_SOLD_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ? WHERE product_id = ?;");
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class BackendSession {
         BoundStatement bs = new BoundStatement(INSERT_INTO_AUCTIONS);
         UUID uuid = UUID.randomUUID();
         java.time.LocalTime auctionEndTime = java.time.LocalTime.parse(auctionEnd);
-        bs.bind(uuid,auctionEndTime, buyOutPrice, startingPrice,  false , startingPrice);
+        bs.bind(uuid,auctionEndTime, buyOutPrice, startingPrice,  false);
 
         try {
             session.execute(bs);
@@ -85,10 +85,9 @@ public class BackendSession {
             int rbuyer_id = row.getInt("buyer_id");
             int rcurrent_price = row.getInt("current_price");
             boolean ris_sold = row.getBool("is_sold");
-            int rstarting_price = row.getInt("starting_price");
             LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
 
-            builder.append(String.format(AUCTION_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id,rcurrent_price,ris_sold,rstarting_price));
+            builder.append(String.format(AUCTION_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id,rcurrent_price,ris_sold));
         }
 
         return builder.toString();
