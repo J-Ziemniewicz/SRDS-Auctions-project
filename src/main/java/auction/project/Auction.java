@@ -11,6 +11,8 @@ public class Auction {
     private static final String PROPERTIES_FILENAME = "config.properties";
 
     public static void main(String[] args) throws IOException, BackendException {
+        Thread t1 = new Thread(new Bot());
+        t1.start();
         String contactPoint = null;
         String keyspace = null;
 

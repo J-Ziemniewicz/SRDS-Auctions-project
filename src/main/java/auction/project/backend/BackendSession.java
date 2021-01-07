@@ -8,8 +8,6 @@ import com.datastax.driver.extras.codecs.jdk8.LocalTimeCodec;
 import java.time.LocalTime;
 import java.util.UUID;
 
-// TODO: UPDATE Price if is_sold == FALSE
-// TODO: GDY czas ten sam update'uj ten z wieksza kwota
 
 public class BackendSession {
     private static final Logger logger = LoggerFactory.getLogger(BackendSession.class);
@@ -119,18 +117,6 @@ public class BackendSession {
         logger.info("Auction product " + product_id + " sold status updated.");
     }
 
-//    public void upsertUser(String companyName, String name, int phone, String street) throws BackendException {
-//        BoundStatement bs = new BoundStatement(INSERT_INTO_USERS);
-//        bs.bind(companyName, name, phone, street);
-//
-//        try {
-//            session.execute(bs);
-//        } catch (Exception e) {
-//            throw new BackendException("Could not perform an upsert. " + e.getMessage() + ".", e);
-//        }
-//
-//        logger.info("User " + name + " upserted");
-//    }
 
     public void deleteAll() throws BackendException {
         BoundStatement bs = new BoundStatement(DELETE_ALL_FROM_AUCTIONS);
