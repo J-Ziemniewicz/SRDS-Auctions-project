@@ -33,6 +33,8 @@ public class BackendSession {
     private static PreparedStatement INSERT_INTO_AUCTIONS;
     private static PreparedStatement DELETE_ALL_FROM_AUCTIONS;
     private static PreparedStatement SELECT_ALL_FROM_AUCTIONS;
+    private static PreparedStatement UPDATE_PRICE_AUCTIONS;
+    private static PreparedStatement UPDATE_SOLD_AUCTIONS;
 
     private static final String AUCTION_FORMAT = "- %-10s  %-10s %-8s %-8s %-8s %-8s %-8s\n";
 
@@ -41,6 +43,8 @@ public class BackendSession {
             SELECT_ALL_FROM_AUCTIONS = session.prepare("SELECT * FROM auctions;");
             DELETE_ALL_FROM_AUCTIONS = session.prepare("TRUNCATE auctions;");
             INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold,starting_price) VALUES (?,?,?,?,?,?);");
+            UPDATE_PRICE_AUCTIONS = session.prepare("UPDATE auctions set current_price = ? WHERE product_id = ?;");
+            UPDATE_SOLD_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ? WHERE product_id = ?;");
         } catch (Exception e) {
             throw new BackendException("Could not prepare statements. " + e.getMessage() + ".", e);
         }
@@ -88,6 +92,32 @@ public class BackendSession {
         }
 
         return builder.toString();
+    }
+
+    public void updateProductPrice(int current_price, int product_id) throws BackendException {
+        BoundStatement bs = new BoundStatement(UPDATE_SOLD_AUCTIONS);
+        bs.bind(current_price, product_id);
+
+        try {
+            session.execute(bs);
+        } catch (Exception e) {
+            throw new BackendException("Could not perform an update of current price on " + product_id + ". " + e.getMessage() + ".", e);
+        }
+
+        logger.info("Auction product " + product_id + " current price updated: " + current_price);
+    }
+
+    public void updateProductSold(boolean is_sold, int product_id) throws BackendException {
+        BoundStatement bs = new BoundStatement(UPDATE_PRICE_AUCTIONS);
+        bs.bind(is_sold, product_id);
+
+        try {
+            session.execute(bs);
+        } catch (Exception e) {
+            throw new BackendException("Could not perform an update of sold status on " + product_id + ". " + e.getMessage() + ".", e);
+        }
+
+        logger.info("Auction product " + product_id + " sold status updated.");
     }
 
 //    public void upsertUser(String companyName, String name, int phone, String street) throws BackendException {
