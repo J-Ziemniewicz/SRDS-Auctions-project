@@ -64,4 +64,7 @@ public class Product {
         this.product_id = product_id;
     }
 
+    public void setBuyer_id(int buyer_id) {
+        this.buyer_id = buyer_id;
+    }
 }

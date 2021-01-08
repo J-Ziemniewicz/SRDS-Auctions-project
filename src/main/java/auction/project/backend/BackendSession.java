@@ -35,18 +35,22 @@ public class BackendSession {
     private static PreparedStatement INSERT_INTO_AUCTIONS;
     private static PreparedStatement DELETE_ALL_FROM_AUCTIONS;
     private static PreparedStatement SELECT_ALL_FROM_AUCTIONS;
+    private static PreparedStatement SELECT_PRODUCT_AUCTIONS;
     private static PreparedStatement UPDATE_PRICE_AUCTIONS;
     private static PreparedStatement UPDATE_SOLD_AUCTIONS;
+    private static PreparedStatement UPDATE_BUYOUT_AUCTIONS;
 
     private static final String AUCTION_FORMAT = "- %-10s  %-10s %-8s %-8s %-8s %-8s\n";
 
     private void prepareStatements() throws BackendException {
         try {
             SELECT_ALL_FROM_AUCTIONS = session.prepare("SELECT * FROM auctions;");
+            SELECT_PRODUCT_AUCTIONS = session.prepare("SELECT * FROM auctions where product_id = ?;");
             DELETE_ALL_FROM_AUCTIONS = session.prepare("TRUNCATE auctions;");
             INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold) VALUES (?,?,?,?,?);");
             UPDATE_PRICE_AUCTIONS = session.prepare("UPDATE auctions set current_price = ? WHERE product_id = ?;");
             UPDATE_SOLD_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ? WHERE product_id = ?;");
+            UPDATE_BUYOUT_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ?, current_price = ? WHERE product_id = ?;");
         } catch (Exception e) {
             throw new BackendException("Could not prepare statements. " + e.getMessage() + ".", e);
         }
@@ -54,7 +58,7 @@ public class BackendSession {
         logger.info("Statements prepared");
     }
 
-    public void upsertProduct(int buyOutPrice, int startingPrice,String auctionEnd) throws BackendException {
+    public void upsertProduct(int buyOutPrice, int startingPrice, String auctionEnd) throws BackendException {
         BoundStatement bs = new BoundStatement(INSERT_INTO_AUCTIONS);
         UUID uuid = UUID.randomUUID();
         java.time.LocalTime auctionEndTime = java.time.LocalTime.parse(auctionEnd);
@@ -69,7 +73,30 @@ public class BackendSession {
         logger.info("Auction product " + uuid + " upserted");
     }
 
+    public Product selectProduct(UUID product_id) throws BackendException {
+        Product fetchedProduct = null;
+        BoundStatement bs = new BoundStatement(SELECT_PRODUCT_AUCTIONS);
+        bs.bind(product_id);
 
+        ResultSet rs = null;
+
+        try {
+            rs = session.execute(bs);
+        } catch (Exception e) {
+            throw new BackendException("Could not perform a query. " + e.getMessage() + ".", e);
+        }
+
+        for (Row row : rs) {
+
+            UUID ruuid = row.getUUID("product_id");
+            int rbuy_out_price = row.getInt("buy_out_price");
+            int rcurrent_price = row.getInt("current_price");
+            boolean ris_sold = row.getBool("is_sold");
+            LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
+            fetchedProduct = new Product(ruuid,rauction_end_conv,rbuy_out_price,rcurrent_price,ris_sold);
+        }
+        return fetchedProduct;
+    }
 
     public List<Product> selectAll() throws  BackendException {
         List<Product> fetchedProducts = new ArrayList<>();
@@ -122,7 +149,7 @@ public class BackendSession {
         return builder.toString();
     }
 
-    public void updateProductPrice(int current_price, int product_id) throws BackendException {
+    public void updateProductPrice(int current_price, UUID product_id) throws BackendException {
         BoundStatement bs = new BoundStatement(UPDATE_SOLD_AUCTIONS);
         bs.bind(current_price, product_id);
 
@@ -135,9 +162,22 @@ public class BackendSession {
         logger.info("Auction product " + product_id + " current price updated: " + current_price);
     }
 
-    public void updateProductSold(boolean is_sold, int product_id) throws BackendException {
-        BoundStatement bs = new BoundStatement(UPDATE_PRICE_AUCTIONS);
+    public void updateProductSold(boolean is_sold, UUID product_id) throws BackendException {
+        BoundStatement bs = new BoundStatement(UPDATE_SOLD_AUCTIONS);
         bs.bind(is_sold, product_id);
+
+        try {
+            session.execute(bs);
+        } catch (Exception e) {
+            throw new BackendException("Could not perform an update of sold status on " + product_id + ". " + e.getMessage() + ".", e);
+        }
+
+        logger.info("Auction product " + product_id + " sold status updated.");
+    }
+
+    public void updateProductBuyOut(boolean is_sold, int bout_out_price, UUID product_id) throws BackendException {
+        BoundStatement bs = new BoundStatement(UPDATE_BUYOUT_AUCTIONS);
+        bs.bind(is_sold, bout_out_price, product_id);
 
         try {
             session.execute(bs);
