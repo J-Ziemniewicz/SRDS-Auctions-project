@@ -3,6 +3,7 @@ package auction.project;
 import auction.project.backend.BackendException;
 import auction.project.backend.BackendSession;
 
+
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.List;
@@ -37,55 +38,47 @@ public class Bot implements Runnable{
          System.out.println(builder.toString());
     }
 
-    private void start() throws IOException, BackendException {
-
-        String contactPoint = null;
-        String keyspace = null;
-
-        Properties properties = new Properties();
-        try {
-            properties.load(Auction.class.getClassLoader().getResourceAsStream(PROPERTIES_FILENAME));
-
-            contactPoint = properties.getProperty("contact_point");
-            keyspace = properties.getProperty("keyspace");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        BackendSession session = new BackendSession(contactPoint, keyspace);
-
-        List<Product> productList = session.selectAll();
-        System.out.println("\n\nThread: " + Thread.currentThread().getId() + " chosen product:");
-        if(productList.size()>0) {
-            Product chosenProduct = pickRandom(productList);
-            printProduct(chosenProduct);
-        }
-        else {
-            System.out.println("No products on auction");
-        }
-
-
-        //Operation for testing purpose
-        session.upsertProduct(157,15,"16:00:00");
-//        System.out.println("------------------------------------------------------------");
-//        for(Product temp : productList){
-//
-//            System.out.println(temp.getProduct_id()+" | "+temp.getAuction_end()+" | "+temp.getCurrent_price()+" | "+temp.getBuy_out_price());
-//        }
-//
-//        System.out.println("------------------------------------------------------------\n");
-
-
-        System.exit(0);
-    }
 
     @Override
     public void run() {
         try {
-            this.start();
-        } catch (BackendException | IOException backEx) {
+            System.out.println(Thread.currentThread().getName());
+            String contactPoint = null;
+            String keyspace = null;
+
+            Properties properties = new Properties();
+            try {
+                properties.load(Auction.class.getClassLoader().getResourceAsStream(PROPERTIES_FILENAME));
+
+                contactPoint = properties.getProperty("contact_point");
+                keyspace = properties.getProperty("keyspace");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            BackendSession session = new BackendSession(contactPoint, keyspace);
+
+            List<Product> productList = session.selectAll();
+            Thread.sleep(1000);
+            System.out.println("\n\nThread: " + Thread.currentThread().getName() + " chosen product:");
+            if(productList.size()>0) {
+                Product chosenProduct = pickRandom(productList);
+                printProduct(chosenProduct);
+            }
+            else {
+                System.out.println("No products on auction");
+            }
+
+
+            //Operation for testing purpose
+            session.upsertProduct(157,15,"16:00:00");
+            Thread.sleep(1000);
+
+
+
+        } catch (BackendException | InterruptedException backEx) {
             backEx.printStackTrace();
         }
+        System.exit(0);
     }
 
 }

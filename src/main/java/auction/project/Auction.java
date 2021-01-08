@@ -14,6 +14,24 @@ public class Auction {
 
     private static final String PROPERTIES_FILENAME = "config.properties";
 
+    private static void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+                pool.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            pool.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+    }
+
     public static void main(String[] args) throws IOException, BackendException, InterruptedException {
         String contactPoint = null;
         String keyspace = null;
@@ -42,30 +60,44 @@ public class Auction {
 
 
         Thread.sleep(1000);
-//        session.deleteAll();
-        session.close();
-        ExecutorService es = Executors.newCachedThreadPool();
-        for(int i=0;i<3;i++) {
-            es.execute(new Bot());
-        }
-        es.shutdown();
-        while(!es.awaitTermination(1, TimeUnit.MINUTES)){
-            System.out.println("Waiting for threads");
-        }
-//        Thread bot1 = new Thread(new Bot());
-//        Thread bot2 = new Thread(new Bot());
-//        Thread bot3 = new Thread(new Bot());
-//        Thread bot4 = new Thread(new Bot());
+//        ExecutorService es = Executors.newCachedThreadPool();
+//        for(int i=0;i<3;i++) {
+//            es.execute(new Bot());
+//        }
+//        es.shutdown(); // Disable new tasks from being submitted
+//        try {
+//            // Wait a while for existing tasks to terminate
+//            if (!es.awaitTermination(60, TimeUnit.SECONDS)) {
+//                es.shutdownNow(); // Cancel currently executing tasks
+//                // Wait a while for tasks to respond to being cancelled
+//                if (!es.awaitTermination(60, TimeUnit.SECONDS))
+//                    System.err.println("Pool did not terminate");
+//            }
+//        } catch (InterruptedException ie) {
+//            // (Re-)Cancel if current thread also interrupted
+//            es.shutdownNow();
+//            // Preserve interrupt status
+//            Thread.currentThread().interrupt();
+//        }
+//        es.shutdown();
+//        while(!es.awaitTermination(1, TimeUnit.MINUTES)){
+//            es.shutdown();
 //
-//        bot1.start();
-//        bot2.start();
-//        bot3.start();
-//        bot4.start();
-//
-//        bot1.join();
-//        bot2.join();
-//        bot3.join();
-//        bot4.join();
+//        }
+        Thread bot1 = new Thread(new Bot());
+        Thread bot2 = new Thread(new Bot());
+        Thread bot3 = new Thread(new Bot());
+        Thread bot4 = new Thread(new Bot());
+
+        bot1.start();
+        bot2.start();
+        bot3.start();
+        bot4.start();
+
+        bot1.join();
+        bot2.join();
+        bot3.join();
+        bot4.join();
 //        session.deleteAll();
 
         System.exit(0);
