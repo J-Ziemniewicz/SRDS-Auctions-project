@@ -1,11 +1,15 @@
 package auction.project.backend;
 
+import auction.project.Product;
 import com.datastax.driver.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.datastax.driver.extras.codecs.jdk8.LocalTimeCodec;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -65,7 +69,34 @@ public class BackendSession {
         logger.info("Auction product " + uuid + " upserted");
     }
 
-    public String selectAll() throws BackendException {
+
+
+    public List<Product> selectAll() throws  BackendException {
+        List<Product> fetchedProducts = new ArrayList<>();
+        BoundStatement bs = new BoundStatement(SELECT_ALL_FROM_AUCTIONS);
+
+        ResultSet rs = null;
+
+        try {
+            rs = session.execute(bs);
+        } catch (Exception e) {
+            throw new BackendException("Could not perform a query. " + e.getMessage() + ".", e);
+        }
+
+        for (Row row : rs) {
+
+            UUID ruuid = row.getUUID("product_id");
+            int rbuy_out_price = row.getInt("buy_out_price");
+            int rcurrent_price = row.getInt("current_price");
+            boolean ris_sold = row.getBool("is_sold");
+            LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
+            Product tmpProd = new Product(ruuid,rauction_end_conv,rbuy_out_price,rcurrent_price,ris_sold);
+            fetchedProducts.add(tmpProd);
+        }
+        return fetchedProducts;
+    }
+
+    public String printAll() throws BackendException {
         StringBuilder builder = new StringBuilder();
         BoundStatement bs = new BoundStatement(SELECT_ALL_FROM_AUCTIONS);
 
@@ -128,6 +159,16 @@ public class BackendSession {
         }
 
         logger.info("All products deleted from auction");
+    }
+
+    public void close(){
+        try {
+            if (session != null) {
+                session.getCluster().close();
+            }
+        } catch (Exception e) {
+            logger.error("Could not close existing cluster", e);
+        }
     }
 
     protected void finalize() {
