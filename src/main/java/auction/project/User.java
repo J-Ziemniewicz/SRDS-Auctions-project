@@ -42,7 +42,8 @@ public class User {
         }
         else {
             System.out.println("Auctions on this product has ended");
-            session.updateProductSold(true, productToBid.getProduct_id());
+            if (productToBid.getBuyer_id() != -1)
+                session.updateProductSold(true, productToBid.getProduct_id());
         }
 
         return productToBid.getBuyer_id() == id;
@@ -62,7 +63,7 @@ public class User {
 
             return afterBidProduct.getBuyer_id() == id;
         }
-        else
+        else if (productToBuy.getBuyer_id() != -1)
             session.updateProductSold(true, productToBuy.getProduct_id());
 
         return productToBuy.getBuyer_id() == id;
