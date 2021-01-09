@@ -46,12 +46,29 @@ public class Bot implements Runnable {
         System.out.println(builder.toString());
     }
 //TODO: biding function
-    private void startBiding(Product product, User user) throws BackendException {
-       UUID prod_id =  product.getProduct_id();
+    private void startBiding(Product product, User user) throws BackendException, InterruptedException {
        Random rand = new Random();
-       int if_buy_out = rand.nextInt(7);
-       if (if_buy_out==6){
-           user.buyOutProduct(product);
+        boolean result;
+       int if_buy_out = rand.nextInt(6);
+       if (if_buy_out==5){
+          result = user.buyOutProduct(product);
+          if(result){
+              System.out.println("Product bought successfully");
+          }else {
+              System.out.println("Unsuccessful bought");
+          }
+       }
+       else{
+           int price = product.getCurrent_price();
+           int upBid = rand.nextInt(price/3);
+           System.out.println("Biding price "+(price+upBid));
+           result = user.bidTheProduct(price+upBid,product);
+           if(result){
+               System.out.println("Product bid successfully");
+           }else {
+               System.out.println("Unsuccessful bid");
+           }
+
        }
 
 
@@ -89,19 +106,13 @@ public class Bot implements Runnable {
 
                 }
                 else {
-                    System.out.println("No products on auction");
+                    System.out.println("No available products on auction");
                 }
             }
             else {
-                System.out.println("No products on auction");
+                System.out.println("No available products on auction");
             }
 
-
-
-
-
-            //Operation for testing purpose
-//            session.upsertProduct(157,15,"16:00:00");
             Thread.sleep(500);
 
 

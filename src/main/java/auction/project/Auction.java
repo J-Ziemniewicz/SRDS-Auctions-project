@@ -49,7 +49,7 @@ public class Auction {
 
         BackendSession session = new BackendSession(contactPoint, keyspace);
 
-       session.upsertProduct(156,50,"18:00:00");
+       session.upsertProduct(156,50,"19:30:00");
 
         String output = session.printAll();
 
