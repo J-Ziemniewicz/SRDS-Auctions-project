@@ -175,9 +175,9 @@ public class BackendSession {
         logger.info("Auction product " + product_id + " sold status updated.");
     }
 
-    public void updateProductBuyOut(boolean is_sold, int bout_out_price, UUID product_id, long user_id) throws BackendException {
+    public void updateProductBuyOut(boolean is_sold, int buy_out_price, UUID product_id, long user_id) throws BackendException {
         BoundStatement bs = new BoundStatement(UPDATE_BUYOUT_AUCTIONS);
-        bs.bind(is_sold, bout_out_price,user_id, product_id);
+        bs.bind(is_sold, buy_out_price, user_id, product_id);
 
         try {
             session.execute(bs);
