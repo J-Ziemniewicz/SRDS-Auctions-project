@@ -46,7 +46,7 @@ public class User {
         return productToBid.getBuyer_id() == id;
     }
 
-    boolean buyOutProduct(int priceToBid, @NotNull Product product) throws BackendException {
+    boolean buyOutProduct( @NotNull Product product) throws BackendException {
         Product productToBuy = session.selectProduct(product.getProduct_id());
         LocalTime time = java.time.LocalTime.now();
         if(productToBuy.isIs_sold())
@@ -54,14 +54,12 @@ public class User {
 
         if(time.isBefore(productToBuy.getAuction_end()))
         {
-            if(priceToBid >= productToBuy.getBuy_out_price())
-            {
                 session.updateProductBuyOut(true, productToBuy.getBuy_out_price(), productToBuy.getProduct_id(), id);
+
                 return true;
-            }
-            else
-                return false;
         }
+
+
         return productToBuy.getBuyer_id() == id;
     }
 }

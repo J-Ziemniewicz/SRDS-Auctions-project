@@ -17,15 +17,14 @@ public class Bot implements Runnable {
     private static final String PROPERTIES_FILENAME = "config.properties";
     private static final String PRODUCT_FORMAT = "- %-10s | %-10s | %-8s | %-8s | %-8s | %-8s\n";
 
-    //TODO: finish pickRandom function
     private int pickRandom(List<Product> productList) {
         Product prod;
         Random rand = new Random();
+        LocalTime time = java.time.LocalTime.now();
         do {
             int randomIdx =  rand.nextInt(productList.size());
-            Date date= new Date();
             prod = productList.get(randomIdx);
-            if(prod.isIs_sold()){
+            if(prod.isIs_sold() || time.isAfter(prod.getAuction_end())){
                 productList.remove(randomIdx);
             }
             else {
@@ -47,8 +46,14 @@ public class Bot implements Runnable {
         System.out.println(builder.toString());
     }
 //TODO: biding function
-    private void startBiding(Product product){
-        int currentPrice = product.getCurrent_price();
+    private void startBiding(Product product, User user) throws BackendException {
+       UUID prod_id =  product.getProduct_id();
+       Random rand = new Random();
+       int if_buy_out = rand.nextInt(7);
+       if (if_buy_out==6){
+           user.buyOutProduct(product);
+       }
+
 
     }
     @Override
@@ -79,7 +84,9 @@ public class Bot implements Runnable {
                     Product chosenProduct = productList.get(prodIdx);
                     printProduct(chosenProduct);
                     User botUser = new User(session, Thread.currentThread().getId());
-                    botUser.bidTheProduct(60, chosenProduct);
+                    startBiding(chosenProduct,botUser);
+//                    botUser.bidTheProduct(60, chosenProduct);
+
                 }
                 else {
                     System.out.println("No products on auction");
