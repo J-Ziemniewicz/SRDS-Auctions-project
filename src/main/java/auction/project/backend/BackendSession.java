@@ -22,7 +22,7 @@ public class BackendSession {
 
     public BackendSession(String contactPoint, String keyspace) throws BackendException {
 
-        Cluster cluster = Cluster.builder().addContactPoint(contactPoint).build();
+        Cluster cluster = Cluster.builder().addContactPoint(contactPoint).withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.ONE)).build();
         cluster.getConfiguration().getCodecRegistry().register(LocalTimeCodec.instance);
         try {
             session = cluster.connect(keyspace);

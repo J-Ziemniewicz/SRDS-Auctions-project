@@ -55,9 +55,10 @@ public class Bot implements Runnable {
         UUID prod_id = product.getProduct_id();
         long user_id = user.getId();
         do{
+
             while (product.getBuyer_id()== user_id){
-                product = session.selectProduct(prod_id);
                 Thread.sleep(500);
+                product = session.selectProduct(prod_id);
             }
 
             Random rand = new Random();
@@ -65,6 +66,7 @@ public class Bot implements Runnable {
             int if_buy_out = rand.nextInt(6);
 
             if (if_buy_out==5){
+                logger.info("Buying out "+prod_id);
                 result = user.buyOutProduct(product);
                 if(result){
     //                System.out.println("[Thread "+Thread.currentThread().getName()+"] Product bought successfully");
@@ -117,7 +119,6 @@ public class Bot implements Runnable {
 
 
             List<Product> productList = session.selectAll();
-            Thread.sleep(500);
 
 //            System.out.println("\n\nThread: " + Thread.currentThread().getName() + " chosen product:");
             if(productList.size()>0) {
@@ -127,9 +128,13 @@ public class Bot implements Runnable {
                     Product chosenProduct = productList.get(prodIdx);
 
                     printProduct(chosenProduct);
-                    User botUser = new User(session, Thread.currentThread().getId());
-                    startBiding(chosenProduct,botUser);
-
+                    Product updateProduct = session.selectProduct(chosenProduct.getProduct_id());
+                    if(!updateProduct.isIs_sold()) {
+                        User botUser = new User(session, Thread.currentThread().getId());
+                        startBiding(updateProduct, botUser);
+                    }else {
+                        logger.info("Product "+updateProduct.getProduct_id()+" already sold");
+                    }
                 }
                 else {
                     logger.info("No available products on auction");
@@ -141,13 +146,14 @@ public class Bot implements Runnable {
 //                System.out.println("No available products on auction");
             }
 
-            Thread.sleep(500);
+
 
 
 
         } catch (BackendException | InterruptedException backEx) {
             backEx.printStackTrace();
         }
+        logger.info("Ending biding");
         System.exit(0);
     }
 

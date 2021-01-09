@@ -2,9 +2,6 @@ package auction.project;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import auction.project.backend.BackendException;
 import auction.project.backend.BackendSession;
@@ -13,24 +10,9 @@ import auction.project.backend.BackendSession;
 public class Auction {
 
     private static final String PROPERTIES_FILENAME = "config.properties";
-//
-//    private static void shutdownAndAwaitTermination(ExecutorService pool) {
-//        pool.shutdown(); // Disable new tasks from being submitted
-//        try {
-//            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
-//                pool.shutdownNow();
-//                if (!pool.awaitTermination(60, TimeUnit.SECONDS))
-//                    System.err.println("Pool did not terminate");
-//            }
-//        } catch (InterruptedException ie) {
-//            // (Re-)Cancel if current thread also interrupted
-//            pool.shutdownNow();
-//            // Preserve interrupt status
-//            Thread.currentThread().interrupt();
-//        }
-//    }
 
-    public static void main(String[] args) throws IOException, BackendException, InterruptedException {
+
+    public static void main(String[] args) throws  BackendException, InterruptedException {
         String contactPoint = null;
         String keyspace = null;
 
@@ -49,8 +31,10 @@ public class Auction {
 
         BackendSession session = new BackendSession(contactPoint, keyspace);
 
-       session.upsertProduct(156,50,"21:00:00");
-
+//       session.upsertProduct(156,50,"21:10:00");
+//        session.upsertProduct(250,70,"21:56:00");
+//        session.upsertProduct(250,70,"21:56:00");
+//        session.upsertProduct(250,70,"21:56:00");
         String output = session.printAll();
 
         System.out.println("Auction products: \n" + output);
