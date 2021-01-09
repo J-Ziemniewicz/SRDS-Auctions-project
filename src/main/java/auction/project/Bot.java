@@ -6,27 +6,36 @@ import auction.project.backend.BackendSession;
 
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 //TODO: Randomize price and buy_out
 //TODO: [if enough time] Bid on multiple products
 //TODO: When won biding start bid on new product
 
-public class Bot implements Runnable{
+public class Bot implements Runnable {
+    private BackendSession session;
     private static final String PROPERTIES_FILENAME = "config.properties";
     private static final String PRODUCT_FORMAT = "- %-10s | %-10s | %-8s | %-8s | %-8s | %-8s\n";
 
-    private Product pickRandom(List<Product> productList){
+    //TODO: finish pickRandom function
+    private int pickRandom(List<Product> productList) {
+        Product prod;
         Random rand = new Random();
-        Product prod = productList.get(rand.nextInt(productList.size()));
-
-        return prod;
+        do {
+            int randomIdx =  rand.nextInt(productList.size());
+            Date date= new Date();
+            prod = productList.get(randomIdx);
+            if(prod.isIs_sold()){
+                productList.remove(randomIdx);
+            }
+            else {
+                return randomIdx;
+            }
+        }while(productList.size()>0);
+        return -1;
     }
 
-    private void printProduct(Product prod){
+    private void printProduct(Product prod) {
         StringBuilder builder = new StringBuilder();
         UUID ruuid = prod.getProduct_id();
         int rbuy_out_price = prod.getBuy_out_price();
@@ -34,11 +43,14 @@ public class Bot implements Runnable{
         int rcurrent_price = prod.getCurrent_price();
         boolean ris_sold = prod.isIs_sold();
         LocalTime rauction_end_conv = prod.getAuction_end();
-        builder.append(String.format(PRODUCT_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id,rcurrent_price,ris_sold));
-         System.out.println(builder.toString());
+        builder.append(String.format(PRODUCT_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id, rcurrent_price, ris_sold));
+        System.out.println(builder.toString());
     }
+//TODO: biding function
+    private void startBiding(Product product){
+        int currentPrice = product.getCurrent_price();
 
-
+    }
     @Override
     public void run() {
         try {
@@ -55,23 +67,35 @@ public class Bot implements Runnable{
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            BackendSession session = new BackendSession(contactPoint, keyspace);
+            session = new BackendSession(contactPoint, keyspace);
 
             List<Product> productList = session.selectAll();
-            Thread.sleep(1000);
+            Thread.sleep(500);
             System.out.println("\n\nThread: " + Thread.currentThread().getName() + " chosen product:");
             if(productList.size()>0) {
-                Product chosenProduct = pickRandom(productList);
-                printProduct(chosenProduct);
+                int prodIdx = pickRandom(productList);
+                if(prodIdx>-1) {
+
+                    Product chosenProduct = productList.get(prodIdx);
+                    printProduct(chosenProduct);
+                    User botUser = new User(session, Thread.currentThread().getId());
+                    botUser.bidTheProduct(60, chosenProduct);
+                }
+                else {
+                    System.out.println("No products on auction");
+                }
             }
             else {
                 System.out.println("No products on auction");
             }
 
 
+
+
+
             //Operation for testing purpose
-            session.upsertProduct(157,15,"16:00:00");
-            Thread.sleep(1000);
+//            session.upsertProduct(157,15,"16:00:00");
+            Thread.sleep(500);
 
 
 

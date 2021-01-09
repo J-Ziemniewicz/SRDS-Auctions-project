@@ -8,6 +8,6 @@ buy_out_price int,
 current_price int,
 auction_end time,
 is_sold boolean,
-buyer_id int,
+buyer_id bigint,
 PRIMARY KEY (product_id)
 );

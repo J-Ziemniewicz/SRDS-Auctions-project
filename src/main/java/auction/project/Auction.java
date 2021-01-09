@@ -51,7 +51,7 @@ public class Auction {
 
         BackendSession session = new BackendSession(contactPoint, keyspace);
 
-       session.upsertProduct(155,52,"16:00:00");
+       session.upsertProduct(156,50,"18:00:00");
 
         String output = session.printAll();
 
@@ -59,45 +59,22 @@ public class Auction {
 
 
 
-        Thread.sleep(1000);
-//        ExecutorService es = Executors.newCachedThreadPool();
-//        for(int i=0;i<3;i++) {
-//            es.execute(new Bot());
-//        }
-//        es.shutdown(); // Disable new tasks from being submitted
-//        try {
-//            // Wait a while for existing tasks to terminate
-//            if (!es.awaitTermination(60, TimeUnit.SECONDS)) {
-//                es.shutdownNow(); // Cancel currently executing tasks
-//                // Wait a while for tasks to respond to being cancelled
-//                if (!es.awaitTermination(60, TimeUnit.SECONDS))
-//                    System.err.println("Pool did not terminate");
-//            }
-//        } catch (InterruptedException ie) {
-//            // (Re-)Cancel if current thread also interrupted
-//            es.shutdownNow();
-//            // Preserve interrupt status
-//            Thread.currentThread().interrupt();
-//        }
-//        es.shutdown();
-//        while(!es.awaitTermination(1, TimeUnit.MINUTES)){
-//            es.shutdown();
-//
-//        }
+        Thread.sleep(500);
+
         Thread bot1 = new Thread(new Bot());
-        Thread bot2 = new Thread(new Bot());
-        Thread bot3 = new Thread(new Bot());
-        Thread bot4 = new Thread(new Bot());
+//        Thread bot2 = new Thread(new Bot());
+//        Thread bot3 = new Thread(new Bot());
+//        Thread bot4 = new Thread(new Bot());
 
         bot1.start();
-        bot2.start();
-        bot3.start();
-        bot4.start();
+//        bot2.start();
+//        bot3.start();
+//        bot4.start();
 
         bot1.join();
-        bot2.join();
-        bot3.join();
-        bot4.join();
+//        bot2.join();
+//        bot3.join();
+//        bot4.join();
 //        session.deleteAll();
 
         System.exit(0);

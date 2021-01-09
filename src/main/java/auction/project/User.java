@@ -8,9 +8,9 @@ import java.time.LocalTime;
 
 public class User {
     BackendSession session;
-    int id;
+    long id;
 
-    User(BackendSession session, int id)
+    User(BackendSession session, long id)
     {
         this.session = session;
         this.id = id;
@@ -25,20 +25,23 @@ public class User {
 
 
         System.out.println("Local time = " + time + " auction time " + productToBid.getAuction_end());
-        if(time.isBefore(productToBid.getAuction_end()))// sprwadzić czy działa porównanie czasu
+        if(time.isBefore(productToBid.getAuction_end())) //TODO: sprwadzić czy działa porównanie czasu
         {
             if(product.getCurrent_price() >= priceToBid)
                 return false;
 
-            if(priceToBid >= productToBid.getBuy_out_price())
+            else if(priceToBid >= productToBid.getBuy_out_price())
             {
-                session.updateProductBuyOut(true, productToBid.getBuy_out_price(), productToBid.getProduct_id());
+                session.updateProductBuyOut(true, productToBid.getBuy_out_price(), productToBid.getProduct_id(),id);
                 return true;
             }
             else {
-                session.updateProductPrice(priceToBid, productToBid.getProduct_id());
+                session.updateProductPrice(priceToBid, productToBid.getProduct_id(),id);
                 return true;
             }
+        }
+        else {
+            System.out.println("Auctions on this product has ended");
         }
         return productToBid.getBuyer_id() == id;
     }
@@ -53,7 +56,7 @@ public class User {
         {
             if(priceToBid >= productToBuy.getBuy_out_price())
             {
-                session.updateProductBuyOut(true, productToBuy.getBuy_out_price(), productToBuy.getProduct_id());
+                session.updateProductBuyOut(true, productToBuy.getBuy_out_price(), productToBuy.getProduct_id(), id);
                 return true;
             }
             else

@@ -48,9 +48,9 @@ public class BackendSession {
             SELECT_PRODUCT_AUCTIONS = session.prepare("SELECT * FROM auctions where product_id = ?;");
             DELETE_ALL_FROM_AUCTIONS = session.prepare("TRUNCATE auctions;");
             INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold) VALUES (?,?,?,?,?);");
-            UPDATE_PRICE_AUCTIONS = session.prepare("UPDATE auctions set current_price = ? WHERE product_id = ?;");
-            UPDATE_SOLD_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ? WHERE product_id = ?;");
-            UPDATE_BUYOUT_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ?, current_price = ? WHERE product_id = ?;");
+            UPDATE_PRICE_AUCTIONS = session.prepare("UPDATE auctions set current_price = ?,buyer_id = ? WHERE product_id = ?;");
+            UPDATE_SOLD_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ?,buyer_id = ? WHERE product_id = ?;");
+            UPDATE_BUYOUT_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ?, current_price = ?,buyer_id = ? WHERE product_id = ?;");
         } catch (Exception e) {
             throw new BackendException("Could not prepare statements. " + e.getMessage() + ".", e);
         }
@@ -138,7 +138,7 @@ public class BackendSession {
         for (Row row : rs) {
             UUID ruuid = row.getUUID("product_id");
             int rbuy_out_price = row.getInt("buy_out_price");
-            int rbuyer_id = row.getInt("buyer_id");
+            long rbuyer_id = row.getLong("buyer_id");
             int rcurrent_price = row.getInt("current_price");
             boolean ris_sold = row.getBool("is_sold");
             LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
@@ -149,9 +149,9 @@ public class BackendSession {
         return builder.toString();
     }
 
-    public void updateProductPrice(int current_price, UUID product_id) throws BackendException {
-        BoundStatement bs = new BoundStatement(UPDATE_SOLD_AUCTIONS);
-        bs.bind(current_price, product_id);
+    public void updateProductPrice(int current_price, UUID product_id, long user_id) throws BackendException {
+        BoundStatement bs = new BoundStatement(UPDATE_PRICE_AUCTIONS);
+        bs.bind(current_price,user_id, product_id);
 
         try {
             session.execute(bs);
@@ -175,9 +175,9 @@ public class BackendSession {
         logger.info("Auction product " + product_id + " sold status updated.");
     }
 
-    public void updateProductBuyOut(boolean is_sold, int bout_out_price, UUID product_id) throws BackendException {
+    public void updateProductBuyOut(boolean is_sold, int bout_out_price, UUID product_id, long user_id) throws BackendException {
         BoundStatement bs = new BoundStatement(UPDATE_BUYOUT_AUCTIONS);
-        bs.bind(is_sold, bout_out_price, product_id);
+        bs.bind(is_sold, bout_out_price,user_id, product_id);
 
         try {
             session.execute(bs);
@@ -201,15 +201,15 @@ public class BackendSession {
         logger.info("All products deleted from auction");
     }
 
-    public void close(){
-        try {
-            if (session != null) {
-                session.getCluster().close();
-            }
-        } catch (Exception e) {
-            logger.error("Could not close existing cluster", e);
-        }
-    }
+//    public void close(){
+//        try {
+//            if (session != null) {
+//                session.getCluster().close();
+//            }
+//        } catch (Exception e) {
+//            logger.error("Could not close existing cluster", e);
+//        }
+//    }
 
     protected void finalize() {
         try {
