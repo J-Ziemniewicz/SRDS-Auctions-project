@@ -32,7 +32,8 @@ public class User {
 
             if(priceToBid >= productToBid.getBuy_out_price())
             {
-                System.out.println("???");
+                session.updateProductBuyOut(true, productToBid.getBuy_out_price(), productToBid.getProduct_id());
+                return true;
             }
             else {
                 session.updateProductPrice(priceToBid, productToBid.getProduct_id());
