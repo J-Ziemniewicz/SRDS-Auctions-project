@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.util.*;
 
-//TODO: Randomize price and buy_out
-//TODO: [if enough time] Bid on multiple products
-//TODO: When won biding start bid on new product
 
 public class Bot implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Bot.class);
@@ -46,7 +43,6 @@ public class Bot implements Runnable {
         boolean ris_sold = prod.isIs_sold();
         LocalTime rauction_end_conv = prod.getAuction_end();
         builder.append(String.format(PRODUCT_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id, rcurrent_price, ris_sold));
-//        System.out.println("["+Thread.currentThread().getName()+"]"+builder.toString());
         logger.info("Choosen product "+builder.toString());
 
     }
@@ -63,30 +59,30 @@ public class Bot implements Runnable {
 
             Random rand = new Random();
             boolean result;
-            int if_buy_out = rand.nextInt(6);
+            int if_buy_out = rand.nextInt(10);
 
-            if (if_buy_out==5){
+            if (if_buy_out==9){
                 logger.info("Buying out "+prod_id);
                 result = user.buyOutProduct(product);
                 if(result){
-    //                System.out.println("[Thread "+Thread.currentThread().getName()+"] Product bought successfully");
+
                     logger.info("Product bought successfully");
                 }else {
-    //                System.out.println("[Thread "+Thread.currentThread().getName()+"] Unsuccessful bought");
+
                     logger.info("Unsuccessful bought");
                 }
             }
             else {
                 int price = product.getCurrent_price();
-                int upBid = rand.nextInt(price / 3);
-    //           System.out.println("Thread "+Thread.currentThread().getName()+" Biding price "+(price+upBid));
+                int upBid = rand.nextInt(product.getBuy_out_price() / 5);
+
                 logger.info("Biding price " + (price + upBid));
                 result = user.bidTheProduct(price + upBid, product);
                 if (result) {
-    //               System.out.println("[Thread "+Thread.currentThread().getName()+"] Product bid successfully");
+
                     logger.info("Product bid successfully");
                 } else {
-    //               System.out.println("[Thread "+Thread.currentThread().getName()+"] Unsuccessful bid");
+
                     logger.info("Unsuccessful bid");
                 }
             }
@@ -101,7 +97,7 @@ public class Bot implements Runnable {
     @Override
     public void run() {
         try {
-//            System.out.println("Thread: "+Thread.currentThread().getName()+" is up...");
+
             logger.info("Thread " + Thread.currentThread().getId()+" is up...");
             String contactPoint = null;
             String keyspace = null;
@@ -120,7 +116,6 @@ public class Bot implements Runnable {
 
             List<Product> productList = session.selectAll();
 
-//            System.out.println("\n\nThread: " + Thread.currentThread().getName() + " chosen product:");
             if(productList.size()>0) {
                 int prodIdx = pickRandom(productList);
                 if(prodIdx>-1) {
@@ -138,12 +133,10 @@ public class Bot implements Runnable {
                 }
                 else {
                     logger.info("No available products on auction");
-//                    System.out.println("No available products on auction");
                 }
             }
             else {
                 logger.info("No available products on auction");
-//                System.out.println("No available products on auction");
             }
 
 
@@ -154,6 +147,11 @@ public class Bot implements Runnable {
             backEx.printStackTrace();
         }
         logger.info("Ending biding");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.exit(0);
     }
 

@@ -32,9 +32,12 @@ public class Auction {
         BackendSession session = new BackendSession(contactPoint, keyspace);
 
 //       session.upsertProduct(156,50,"21:10:00");
-//        session.upsertProduct(250,70,"21:56:00");
-//        session.upsertProduct(250,70,"21:56:00");
-//        session.upsertProduct(250,70,"21:56:00");
+        session.upsertProduct(120,60,"23:56:00");
+        session.upsertProduct(50,1,"23:56:00");
+        session.upsertProduct(250,70,"22:54:00");
+        session.upsertProduct(500,70,"23:56:00");
+
+
         String output = session.printAll();
 
         System.out.println("Auction products: \n" + output);
@@ -47,17 +50,30 @@ public class Auction {
         Thread bot2 = new Thread(new Bot());
         Thread bot3 = new Thread(new Bot());
         Thread bot4 = new Thread(new Bot());
+        Thread bot5 = new Thread(new Bot());
+        Thread bot6 = new Thread(new Bot());
+        Thread bot7 = new Thread(new Bot());
+        Thread bot8 = new Thread(new Bot());
 
         bot1.start();
         bot2.start();
         bot3.start();
         bot4.start();
+        bot5.start();
+        bot6.start();
+        bot7.start();
+        bot8.start();
 
         bot1.join();
         bot2.join();
         bot3.join();
         bot4.join();
+        bot5.join();
+        bot6.join();
+        bot7.join();
+        bot8.join();
 //        session.deleteAll();
+        Thread.sleep(1000);
 
         System.exit(0);
     }

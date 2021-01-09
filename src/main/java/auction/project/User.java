@@ -41,7 +41,6 @@ public class User {
             else {
                 session.updateProductPrice(priceToBid, productToBid.getProduct_id(), id);
             }
-//            Thread.sleep(500);
             Product afterBidProduct = session.selectProduct(product.getProduct_id());
 
             return afterBidProduct.getBuyer_id() == id;
@@ -65,9 +64,7 @@ public class User {
         if (time.isBefore(productToBuy.getAuction_end()))
         {
             session.updateProductBuyOut(true, productToBuy.getBuy_out_price(), productToBuy.getProduct_id(), id);
-//            Thread.sleep(500);
             Product afterBidProduct = session.selectProduct(product.getProduct_id());
-//            Thread.sleep(500);
             return afterBidProduct.getBuyer_id() == id;
         }
         else if (productToBuy.getBuyer_id() != -1) {

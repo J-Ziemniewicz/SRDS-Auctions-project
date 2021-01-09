@@ -203,16 +203,6 @@ public class BackendSession {
         logger.info("All products deleted from auction");
     }
 
-//    public void close(){
-//        try {
-//            if (session != null) {
-//                session.getCluster().close();
-//            }
-//        } catch (Exception e) {
-//            logger.error("Could not close existing cluster", e);
-//        }
-//    }
-
     protected void finalize() {
         try {
             if (session != null) {
