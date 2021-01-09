@@ -49,7 +49,7 @@ public class Auction {
 
         BackendSession session = new BackendSession(contactPoint, keyspace);
 
-       session.upsertProduct(156,50,"19:30:00");
+       session.upsertProduct(156,50,"21:00:00");
 
         String output = session.printAll();
 
@@ -60,19 +60,19 @@ public class Auction {
         Thread.sleep(500);
 
         Thread bot1 = new Thread(new Bot());
-//        Thread bot2 = new Thread(new Bot());
-//        Thread bot3 = new Thread(new Bot());
-//        Thread bot4 = new Thread(new Bot());
+        Thread bot2 = new Thread(new Bot());
+        Thread bot3 = new Thread(new Bot());
+        Thread bot4 = new Thread(new Bot());
 
         bot1.start();
-//        bot2.start();
-//        bot3.start();
-//        bot4.start();
+        bot2.start();
+        bot3.start();
+        bot4.start();
 
         bot1.join();
-//        bot2.join();
-//        bot3.join();
-//        bot4.join();
+        bot2.join();
+        bot3.join();
+        bot4.join();
 //        session.deleteAll();
 
         System.exit(0);

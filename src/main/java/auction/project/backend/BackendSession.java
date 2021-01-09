@@ -47,7 +47,7 @@ public class BackendSession {
             SELECT_ALL_FROM_AUCTIONS = session.prepare("SELECT * FROM auctions;");
             SELECT_PRODUCT_AUCTIONS = session.prepare("SELECT * FROM auctions where product_id = ?;");
             DELETE_ALL_FROM_AUCTIONS = session.prepare("TRUNCATE auctions;");
-            INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold) VALUES (?,?,?,?,?);");
+            INSERT_INTO_AUCTIONS = session.prepare("INSERT INTO auctions (product_id,auction_end,buy_out_price,current_price,is_sold,buyer_id) VALUES (?,?,?,?,?,-1);");
             UPDATE_PRICE_AUCTIONS = session.prepare("UPDATE auctions set current_price = ?,buyer_id = ? WHERE product_id = ?;");
             UPDATE_SOLD_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ?,buyer_id = ? WHERE product_id = ?;");
             UPDATE_BUYOUT_AUCTIONS = session.prepare("UPDATE auctions set is_sold = ?, current_price = ?,buyer_id = ? WHERE product_id = ?;");

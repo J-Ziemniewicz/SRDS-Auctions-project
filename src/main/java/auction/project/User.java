@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalTime;
 
 public class User {
-    BackendSession session;
-    long id;
+    private final BackendSession session;
+    private final long id;
 
     User(BackendSession session, long id)
     {
@@ -16,7 +16,9 @@ public class User {
         this.id = id;
     }
 
-    boolean bidTheProduct(int priceToBid, @NotNull Product product) throws BackendException, InterruptedException {
+    long getId(){ return id;}
+
+    boolean bidTheProduct(int priceToBid, @NotNull Product product) throws BackendException {
 
         Product productToBid = session.selectProduct(product.getProduct_id());
         LocalTime time = java.time.LocalTime.now();
@@ -35,7 +37,7 @@ public class User {
             else {
                 session.updateProductPrice(priceToBid, productToBid.getProduct_id(), id);
             }
-            Thread.sleep(500);
+//            Thread.sleep(500);
             Product afterBidProduct = session.selectProduct(product.getProduct_id());
 
             return afterBidProduct.getBuyer_id() == id;
@@ -49,7 +51,7 @@ public class User {
         return productToBid.getBuyer_id() == id;
     }
 
-    boolean buyOutProduct(@NotNull Product product) throws BackendException, InterruptedException {
+    boolean buyOutProduct(@NotNull Product product) throws BackendException {
         Product productToBuy = session.selectProduct(product.getProduct_id());
         LocalTime time = java.time.LocalTime.now();
         if (productToBuy.isIs_sold())
@@ -58,7 +60,7 @@ public class User {
         if (time.isBefore(productToBuy.getAuction_end()))
         {
             session.updateProductBuyOut(true, productToBuy.getBuy_out_price(), productToBuy.getProduct_id(), id);
-            Thread.sleep(500);
+//            Thread.sleep(500);
             Product afterBidProduct = session.selectProduct(product.getProduct_id());
 
             return afterBidProduct.getBuyer_id() == id;
