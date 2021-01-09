@@ -9,9 +9,9 @@ public class Product {
     private int buy_out_price;
     private int current_price;
     private boolean is_sold;
-    private int buyer_id;
+    private long buyer_id;
 
-    public Product(UUID product_id, java.time.LocalTime auction_end, int buy_out_price,int starting_price,boolean is_sold)
+    public Product(UUID product_id, java.time.LocalTime auction_end, int buy_out_price, int starting_price, boolean is_sold )
     {
         this.product_id = product_id;
         this.auction_end = auction_end;
@@ -19,6 +19,16 @@ public class Product {
         this.current_price = starting_price;
         this.is_sold = is_sold;
         this.buyer_id = -1;
+    }
+
+    public Product(UUID product_id, java.time.LocalTime auction_end, int buy_out_price, int starting_price, boolean is_sold, long buyer_id)
+    {
+        this.product_id = product_id;
+        this.auction_end = auction_end;
+        this.buy_out_price = buy_out_price;
+        this.current_price = starting_price;
+        this.is_sold = is_sold;
+        this.buyer_id = buyer_id;
     }
 
     public boolean isIs_sold() {
@@ -42,7 +52,7 @@ public class Product {
         return auction_end;
     }
 
-    public int getBuyer_id(){ return buyer_id;}
+    public long getBuyer_id(){ return buyer_id;}
 
     public void setAuction_end(LocalTime auction_end) {
         this.auction_end = auction_end;
