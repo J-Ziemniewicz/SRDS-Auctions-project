@@ -38,7 +38,7 @@ public class Bot implements Runnable {
         StringBuilder builder = new StringBuilder();
         UUID ruuid = prod.getProduct_id();
         int rbuy_out_price = prod.getBuy_out_price();
-        int rbuyer_id = prod.getBuyer_id();
+        long rbuyer_id = prod.getBuyer_id();
         int rcurrent_price = prod.getCurrent_price();
         boolean ris_sold = prod.isIs_sold();
         LocalTime rauction_end_conv = prod.getAuction_end();

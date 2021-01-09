@@ -90,10 +90,11 @@ public class BackendSession {
 
             UUID ruuid = row.getUUID("product_id");
             int rbuy_out_price = row.getInt("buy_out_price");
+            long rbuyer_id = row.getLong("buyer_id");
             int rcurrent_price = row.getInt("current_price");
             boolean ris_sold = row.getBool("is_sold");
             LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
-            fetchedProduct = new Product(ruuid,rauction_end_conv,rbuy_out_price,rcurrent_price,ris_sold);
+            fetchedProduct = new Product(ruuid, rauction_end_conv, rbuy_out_price, rcurrent_price, ris_sold, rbuyer_id);
         }
         return fetchedProduct;
     }
@@ -114,10 +115,11 @@ public class BackendSession {
 
             UUID ruuid = row.getUUID("product_id");
             int rbuy_out_price = row.getInt("buy_out_price");
+            long rbuyer_id = row.getLong("buyer_id");
             int rcurrent_price = row.getInt("current_price");
             boolean ris_sold = row.getBool("is_sold");
             LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
-            Product tmpProd = new Product(ruuid,rauction_end_conv,rbuy_out_price,rcurrent_price,ris_sold);
+            Product tmpProd = new Product(ruuid, rauction_end_conv, rbuy_out_price, rcurrent_price, ris_sold, rbuyer_id);
             fetchedProducts.add(tmpProd);
         }
         return fetchedProducts;
@@ -143,7 +145,7 @@ public class BackendSession {
             boolean ris_sold = row.getBool("is_sold");
             LocalTime rauction_end_conv = LocalTime.ofNanoOfDay(row.getTime("auction_end"));
 
-            builder.append(String.format(AUCTION_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id,rcurrent_price,ris_sold));
+            builder.append(String.format(AUCTION_FORMAT, ruuid, rauction_end_conv, rbuy_out_price, rbuyer_id, rcurrent_price, ris_sold));
         }
 
         return builder.toString();
@@ -175,9 +177,9 @@ public class BackendSession {
         logger.info("Auction product " + product_id + " sold status updated.");
     }
 
-    public void updateProductBuyOut(boolean is_sold, int bout_out_price, UUID product_id, long user_id) throws BackendException {
+    public void updateProductBuyOut(boolean is_sold, int buy_out_price, UUID product_id, long user_id) throws BackendException {
         BoundStatement bs = new BoundStatement(UPDATE_BUYOUT_AUCTIONS);
-        bs.bind(is_sold, bout_out_price,user_id, product_id);
+        bs.bind(is_sold, buy_out_price, user_id, product_id);
 
         try {
             session.execute(bs);
