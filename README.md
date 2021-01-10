@@ -31,7 +31,7 @@ CREATE TABLE Auctions (
 
 
 Uznaliśmy, iż do rozwiązania tego problemu wystarczy jedna tabela przechowująca produkty i informacje dotyczące ceny, 
-czasu końca aukcji, kupującego, oraz tego, czy przedmiot jest już sprzedany. Dla uprostrzenia nie tworzyliśmy tabeli 
+czasu końca aukcji, kupującego, oraz tego, czy przedmiot jest już sprzedany. Dla uproszczenia nie tworzyliśmy tabeli 
 dla użytkowników (osób licytujących).
 
 ## Wnioski
