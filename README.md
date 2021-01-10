@@ -13,9 +13,8 @@ ccm node1 cqlsh -f Auction-project/Schema/create_schema.cql
 
 ## Problem
 
-Analizowany przez nas problem dotyczy licytacji produktów na aukcji. Jak wiemy, na aukcjach jest pełno osób, które często 
-chcą zlicytować jakiś produkt. Serwer musi obsłużyć wszystkie żądania licytacji (lub kupienia produktu) tak by 
-żadne podniesienie ceny nie zostało pominięte.
+Celem projektu było sprawienie, aby ceny licytowanych produktów zawsze rosły oraz aby nie dopuścić do sytuacji, w której sprzedany produkt jest nadal licytowany. 
+Kluczowym problemem było poprawne zakończenie aukcji.
 
 ## Schemat
 ``` CQL 
